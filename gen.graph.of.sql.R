@@ -1,6 +1,6 @@
+# generate graph from sql script by DiagrammeR package
+
 # if (gen.type=="csp_as_node") edge.label <- edge.list$rel
-
-
 
 # edge data frame
 if (gen.type=="csp_as_node") {

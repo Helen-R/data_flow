@@ -7,7 +7,7 @@ options(stringsAsFactors = F)
 # viz.label <- "label_as_csp_name" # "label_as_id" or "label_as_csp_name"
 remove.pattern1 <- "\\[|\\]|\\)|,|;|\\'" # remove for csp name
 remove.pattern2 <- "\\(|#|tmpl|@"  # remove for temp table name
-remove.pattern3 <- "^'+$"
+remove.pattern3 <- "^'+$" # convert data source to Python
 
 # source for parsing
 sql.ls <- c("DsDWSP_script.sql", "DsDSSP_script.sql", "CRMTempDBSP_script.sql",
@@ -16,13 +16,13 @@ sql.ls <- c("DsDWSP_script.sql", "DsDSSP_script.sql", "CRMTempDBSP_script.sql",
 
 for (target.sql in sql.ls) {
     # source for parsing
-    sql.texts <- readLines(file.path("data/raw_input/", target.sql))   #DsDW / CRMDB / CRMDW / CRMDS
+    sql.texts <- readLines(file.path("data/raw_input/", target.sql))
     
     sql.texts %<>% trimws() %>% "["(-grep("^-", .)) #%>% head()
     
     sp.line.id <- grep("StoredProcedure", sql.texts)
     # egdes = csp_name
-    # ex. "/****** Object:  StoredProcedure [dbo].[trans_ShopIdFbMapping]    Script Date: 2018/7/4 下午 03:22:36 ******/" 
+    # ex. "/****** Object:  StoredProcedure [dbo].[******]    Script Date: 2018/7/4 下午 03:22:36 ******/" 
     # into: dbo.trans_ShopIdFbMapping
     edges <- sql.texts[sp.line.id] %>% strsplit(., " +") %>% lapply(., "[", 4) %>% 
         unlist() %>% gsub(remove.pattern1, "", .)   # remove '[ ] ,'
@@ -140,12 +140,3 @@ for (target.sql in sql.ls) {
     
 }
 file.remove("temp.gv")
-# }
-
-# dt <- data.table(df)
-# dt.from <- dt[, .(n=uniqueN(i)), by = .(from)] %>% setorder(., -n)
-# dt[, .(n=uniqueN(i)), by = .(to)] %>% setorder(., -n) %>% print(.)
-# dt[, .(n=uniqueN(i)), by = .(from, to)] %>% setorder(., -n) %>% print(.)
-# x5 <- dt[, .(n=.N), by = .(from, to, i)] %>% setorder(., -n) 
-# x5[n>1]
-# dt.from[n>1]
